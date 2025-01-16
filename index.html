@@ -1,217 +1,162 @@
+<!-- // A modern note-taking application with dynamic numerical tracking. -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dynamic Note-Taking App</title>
+    <title>Note-Taking App</title>
     <style>
-      :root {
-        color-scheme: light dark;
-      }
-
       body {
         margin: 0;
         font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        background-color: #f5f7fa;
-        color: #34495e;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      :root {
+        --bg-color-light: #ffffff;
+        --text-color-light: #000000;
+        --bg-color-dark: #1e1e2f;
+        --text-color-dark: #ffffff;
+        --highlight-color: #4635b1;
+      }
+
+      :root {
+        --bg-color: var(--bg-color-light);
+        --text-color: var(--text-color-light);
       }
 
       @media (prefers-color-scheme: dark) {
-        body {
-          background-color: #1e1e2f;
-          color: #d0d3d4;
-        }
-        #header {
-          background-color: #2b2b3d;
-          border-bottom: 1px solid #444554;
-        }
-        #total {
-          color: #4fc3f7;
-        }
-        button {
-          background-color: #3a3a5b;
-          color: #d0d3d4;
-        }
-        button:hover {
-          background-color: #5a5a7f;
-        }
-        #editor {
-          background-color: #2b2b3d;
-          color: #d0d3d4;
-        }
-        #editor:focus {
-          box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.1);
+        :root {
+          --bg-color: var(--bg-color-dark);
+          --text-color: var(--text-color-dark);
         }
       }
 
-      #header {
-        background-color: #eef1f5;
-        padding: 10px 20px;
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #2c3e50;
-        border-bottom: 1px solid #d3d9df;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      #container {
+        padding: 20px;
+        max-width: 800px;
+        margin: auto;
       }
+
       #total {
-        color: #2980b9;
-        transition: transform 0.3s ease, color 0.3s ease;
+        font-size: 1.5rem;
+        color: var(--text-color);
+        /* color: var(--highlight-color); */
+        font-weight: bold;
+        margin-bottom: 10px;
       }
+
+      #editor {
+        width: 100%;
+        height: 400px;
+        font-family: "Courier New", monospace;
+        font-size: 1rem;
+        line-height: 1.5;
+        background-color: transparent;
+        color: var(--text-color);
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        outline: none;
+        transition: color 0.3s;
+      }
+
       #buttons {
         display: flex;
         gap: 10px;
+        margin-top: 10px;
       }
+
       button {
-        padding: 5px 10px;
-        font-size: 0.9em;
-        border: none;
-        border-radius: 4px;
-        background-color: #3498db;
-        color: white;
+        padding: 8px 12px;
+        font-size: 1rem;
         cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-      button:hover {
-        background-color: #2980b9;
-      }
-      #editor {
-        flex: 1;
-        padding: 20px;
-        font-size: 1.1em;
         border: none;
-        resize: none;
-        outline: none;
-        line-height: 1.5;
-        background-color: #ffffff;
-        color: #34495e;
+        border-radius: 5px;
+        background-color: var(--highlight-color);
+        color: white;
+        transition: background-color 0.3s;
       }
-      #editor:focus {
-        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+
+      button:hover {
+        background-color: #b771e5;
       }
     </style>
   </head>
   <body>
-    <div id="header">
-      <div>Total: <span id="total">0</span></div>
+    <div id="container">
+      <div id="total">Total: 0</div>
+      <textarea id="editor"></textarea>
       <div id="buttons">
-        <button id="insertBrackets">Numbers</button>
-        <button id="copyAll">Copy All</button>
-        <button id="copyTotal">Copy Total</button>
+        <button id="add-brackets">Add Numbers</button>
+        <button id="copy-all">Copy All</button>
+        <button id="copy-total">Copy Total</button>
       </div>
     </div>
-    <textarea id="editor" placeholder="Type your notes here..."></textarea>
 
     <script>
-      const editor = document.getElementById("editor");
       const totalDisplay = document.getElementById("total");
-      const copyAllButton = document.getElementById("copyAll");
-      const copyTotalButton = document.getElementById("copyTotal");
-      const insertBracketsButton = document.getElementById("insertBrackets");
+      const editor = document.getElementById("editor");
+      const addBracketsBtn = document.getElementById("add-brackets");
+      const copyAllBtn = document.getElementById("copy-all");
+      const copyTotalBtn = document.getElementById("copy-total");
 
-      //   function calculateTotal() {
-      //     const text = editor.value;
-      //     const matches = text.match(
-      //       /\[(\d+(?:\.\d+)?(?:[+\-*/]\d+(?:\.\d+)?)*)\]/g
-      //     );
-      //     let total = 0;
-
-      //     if (matches) {
-      //       total = matches.reduce((sum, match) => {
-      //         const expression = match.slice(1, -1);
-      //         try {
-      //           return sum + eval(expression);
-      //         } catch (error) {
-      //           return sum;
-      //         }
-      //       }, 0);
-      //     }
-
-      //     totalDisplay.textContent = total.toFixed(2);
-
-      //     // Subtle animation for the total update
-      //     totalDisplay.style.transform = "scale(1.2)";
-      //     totalDisplay.style.color = "#3498db";
-
-      //     setTimeout(() => {
-      //       totalDisplay.style.transform = "scale(1)";
-      //       totalDisplay.style.color = "#2980b9";
-      //     }, 300);
-      //   }
-
+      // Function to calculate the total of numbers within brackets
       function calculateTotal() {
         const text = editor.value;
-        const matches = text.match(/\[(.*?)\]/g); // Match anything inside brackets
+        const lines = text.split("\n");
+        const regex = /\[(.*?)\]/g;
         let total = 0;
 
-        if (matches) {
-          total = matches.reduce((sum, match) => {
-            // Remove the brackets and trim spaces
-            const expression = match.slice(1, -1).trim();
+        for (const line of lines) {
+          if (line.trim().startsWith("--")) {
+            continue; // Ignore lines starting with "--"
+          }
 
-            // Safely evaluate the expression
+          let match;
+          while ((match = regex.exec(line)) !== null) {
             try {
-              const result = eval(expression); // Use eval for simple arithmetic
-              if (typeof result === "number" && !isNaN(result)) {
-                return sum + result;
-              }
-              return sum;
-            } catch (error) {
-              console.error("Error evaluating expression:", error);
-              return sum;
+              total += eval(match[1]);
+            } catch {
+              // Ignore invalid expressions
             }
-          }, 0);
+          }
         }
-        totalDisplay.textContent = total.toFixed(2);
 
-        // Subtle animation for the total update
-        totalDisplay.style.transform = "scale(1.2)";
-        totalDisplay.style.color = "#3498db";
-
-        setTimeout(() => {
-          totalDisplay.style.transform = "scale(1)";
-          totalDisplay.style.color = "#2980b9";
-        }, 300);
+        totalDisplay.textContent = `Total: ${total.toFixed(2)}`;
       }
 
-      function copyAll() {
-        const total = totalDisplay.textContent;
-        const content = editor.value;
-        const fullText = `Total: ${total}\n${content}`;
-
-        navigator.clipboard.writeText(fullText).then(() => {
-          alert("Content copied to clipboard!");
-        });
-      }
-
-      function copyTotal() {
-        const total = totalDisplay.textContent;
-        const content = editor.value.replace(/\[[^\]]*\]/g, "").trim();
-        const fullText = `Total: ${total}\n${content}`;
-
-        navigator.clipboard.writeText(fullText).then(() => {
-          alert("Content (excluding brackets) copied to clipboard!");
-        });
-      }
-
-      function insertBrackets() {
-        const start = editor.selectionStart;
-        const end = editor.selectionEnd;
-        const value = editor.value;
-
-        editor.value = value.slice(0, start) + "[]" + value.slice(end);
-        editor.setSelectionRange(start + 1, start + 1); // Place cursor inside brackets
-        editor.focus();
-      }
-
+      // Event listener for textarea updates
       editor.addEventListener("input", calculateTotal);
-      copyAllButton.addEventListener("click", copyAll);
-      copyTotalButton.addEventListener("click", copyTotal);
-      insertBracketsButton.addEventListener("click", insertBrackets);
+
+      // Add brackets and position the cursor in between
+      addBracketsBtn.addEventListener("click", () => {
+        const cursorPosition = editor.selectionStart;
+        const textBefore = editor.value.substring(0, cursorPosition);
+        const textAfter = editor.value.substring(cursorPosition);
+        editor.value = `${textBefore}[]${textAfter}`;
+        editor.selectionStart = editor.selectionEnd = cursorPosition + 1;
+        editor.focus();
+      });
+
+      // Copy all text including the total
+      copyAllBtn.addEventListener("click", () => {
+        const totalText = totalDisplay.textContent + "\n" + editor.value;
+        navigator.clipboard.writeText(totalText);
+      });
+
+      // Copy text excluding bracketed content
+      copyTotalBtn.addEventListener("click", () => {
+        const text = editor.value.replace(/\[.*?\]/g, "").trim();
+        const totalText = totalDisplay.textContent + "\n" + text;
+        navigator.clipboard.writeText(totalText);
+      });
+
+      // Initial calculation
+      calculateTotal();
     </script>
   </body>
 </html>
