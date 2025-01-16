@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Note-Taking App</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: #f5f7fa;
+      }
+      #header {
+        background-color: #eef1f5;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #2c3e50;
+        border-bottom: 1px solid #d3d9df;
+      }
+      #total {
+        color: #2980b9;
+        transition: transform 0.3s ease, color 0.3s ease;
+      }
+      #editor {
+        flex: 1;
+        padding: 20px;
+        font-size: 1.1em;
+        border: none;
+        resize: none;
+        outline: none;
+        line-height: 1.5;
+        background-color: #ffffff;
+        color: #34495e;
+      }
+      #editor:focus {
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="header">Total: <span id="total">0</span></div>
+    <textarea id="editor" placeholder="Type your notes here..."></textarea>
+
+    <script>
+      const editor = document.getElementById("editor");
+      const totalDisplay = document.getElementById("total");
+
+      function calculateTotal() {
+        const text = editor.value;
+        const matches = text.match(/\[(.*?)\]/g); // Match anything inside brackets
+        let total = 0;
+
+        if (matches) {
+          total = matches.reduce((sum, match) => {
+            // Remove the brackets and trim spaces
+            const expression = match.slice(1, -1).trim();
+
+            // Safely evaluate the expression
+            try {
+              const result = eval(expression); // Use eval for simple arithmetic
+              if (typeof result === "number" && !isNaN(result)) {
+                return sum + result;
+              }
+              return sum;
+            } catch (error) {
+              console.error("Error evaluating expression:", error);
+              return sum;
+            }
+          }, 0);
+        }
+
+        totalDisplay.textContent = total.toFixed(2);
+
+        // Subtle animation for the total update
+        totalDisplay.style.transform = "scale(1.2)";
+        totalDisplay.style.color = "#3498db";
+
+        setTimeout(() => {
+          totalDisplay.style.transform = "scale(1)";
+          totalDisplay.style.color = "#2980b9";
+        }, 300);
+      }
+
+      editor.addEventListener("input", calculateTotal);
+    </script>
+  </body>
+</html>
