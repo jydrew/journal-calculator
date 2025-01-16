@@ -51,7 +51,7 @@
 
       function calculateTotal() {
         const text = editor.value;
-        const matches = text.match(/\[(.*?)\]/g); // Match anything inside brackets
+        const matches = text.match(/\((.*?)\)/g); // Match anything inside round brackets
         let total = 0;
 
         if (matches) {
