@@ -2,161 +2,160 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Note-Taking App</title>
     <style>
-      body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-color);
-        transition: background-color 0.3s, color 0.3s;
-      }
-
-      :root {
-        --bg-color-light: #ffffff;
-        --text-color-light: #000000;
-        --bg-color-dark: #1e1e2f;
-        --text-color-dark: #ffffff;
-        --highlight-color: #4635b1;
-      }
-
-      :root {
-        --bg-color: var(--bg-color-light);
-        --text-color: var(--text-color-light);
-      }
-
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --bg-color: var(--bg-color-dark);
-          --text-color: var(--text-color-dark);
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
-      }
 
-      #container {
-        padding: 20px;
-        max-width: 800px;
-        margin: auto;
-      }
+        :root {
+            --bg-color-light: #ffffff;
+            --text-color-light: #000000;
+            --bg-color-dark: #1e1e2f;
+            --text-color-dark: #ffffff;
+            --highlight-color: #4635b1;
+        }
 
-      #total {
-        font-size: 1.5rem;
-        color: var(--text-color);
-        /* color: var(--highlight-color); */
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
+        :root {
+            --bg-color: var(--bg-color-light);
+            --text-color: var(--text-color-light);
+        }
 
-      #editor {
-        width: 100%;
-        height: 400px;
-        font-family: "Courier New", monospace;
-        font-size: 1rem;
-        line-height: 1.5;
-        background-color: transparent;
-        color: var(--text-color);
-        border: 1px solid #ccc;
-        padding: 10px;
-        border-radius: 5px;
-        outline: none;
-        transition: color 0.3s;
-      }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: var(--bg-color-dark);
+                --text-color: var(--text-color-dark);
+            }
+        }
 
-      #buttons {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-      }
+        #container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
 
-      button {
-        padding: 8px 12px;
-        font-size: 1rem;
-        cursor: pointer;
-        border: none;
-        border-radius: 5px;
-        background-color: var(--highlight-color);
-        color: white;
-        transition: background-color 0.3s;
-      }
+        #total {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
 
-      button:hover {
-        background-color: #b771e5;
-      }
+        #editor {
+            width: 100%;
+            height: 400px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.5;
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            outline: none;
+            transition: color 0.3s;
+        }
+
+        #buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 8px 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--highlight-color);
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #b771e5;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div id="container">
-      <div id="total">Total: 0</div>
-      <textarea id="editor"></textarea>
-      <div id="buttons">
-        <button id="add-brackets">Add Numbers</button>
-        <button id="copy-all">Copy All</button>
-        <button id="copy-total">Copy Total</button>
-      </div>
+        <div id="total">total: 0</div>
+        <div id="buttons">
+            <button id="add-brackets">Add Brackets</button>
+            <button id="copy-all">Copy All</button>
+            <button id="copy-total">Copy Total</button>
+        </div>
+        <textarea id="editor"></textarea>
     </div>
 
     <script>
-      const totalDisplay = document.getElementById("total");
-      const editor = document.getElementById("editor");
-      const addBracketsBtn = document.getElementById("add-brackets");
-      const copyAllBtn = document.getElementById("copy-all");
-      const copyTotalBtn = document.getElementById("copy-total");
+        const totalDisplay = document.getElementById('total');
+        const editor = document.getElementById('editor');
+        const addBracketsBtn = document.getElementById('add-brackets');
+        const copyAllBtn = document.getElementById('copy-all');
+        const copyTotalBtn = document.getElementById('copy-total');
 
-      // Function to calculate the total of numbers within brackets
-      function calculateTotal() {
-        const text = editor.value;
-        const lines = text.split("\n");
-        const regex = /\[(.*?)\]/g;
-        let total = 0;
+        // Function to calculate the total of numbers within brackets
+        function calculateTotal() {
+            const text = editor.value;
+            const lines = text.split('\n');
+            const regex = /\[(.*?)\]/g;
+            let total = 0;
 
-        for (const line of lines) {
-          if (line.trim().startsWith("--")) {
-            continue; // Ignore lines starting with "--"
-          }
+            for (const line of lines) {
+                if (line.trim().startsWith('--')) {
+                    continue; // Ignore lines starting with "--"
+                }
 
-          let match;
-          while ((match = regex.exec(line)) !== null) {
-            try {
-              total += eval(match[1]);
-            } catch {
-              // Ignore invalid expressions
+                let match;
+                while ((match = regex.exec(line)) !== null) {
+                    try {
+                        total += eval(match[1]);
+                    } catch {
+                        // Ignore invalid expressions
+                    }
+                }
             }
-          }
+
+            totalDisplay.textContent = `Total: ${total.toFixed(2)}`;
         }
 
-        totalDisplay.textContent = `Total: ${total.toFixed(2)}`;
-      }
+        // Event listener for textarea updates
+        editor.addEventListener('input', calculateTotal);
 
-      // Event listener for textarea updates
-      editor.addEventListener("input", calculateTotal);
+        // Add brackets and position the cursor in between
+        addBracketsBtn.addEventListener('click', () => {
+            const cursorPosition = editor.selectionStart;
+            const textBefore = editor.value.substring(0, cursorPosition);
+            const textAfter = editor.value.substring(cursorPosition);
+            editor.value = `${textBefore}[]${textAfter}`;
+            editor.selectionStart = editor.selectionEnd = cursorPosition + 1;
+            editor.focus();
+        });
 
-      // Add brackets and position the cursor in between
-      addBracketsBtn.addEventListener("click", () => {
-        const cursorPosition = editor.selectionStart;
-        const textBefore = editor.value.substring(0, cursorPosition);
-        const textAfter = editor.value.substring(cursorPosition);
-        editor.value = `${textBefore}[]${textAfter}`;
-        editor.selectionStart = editor.selectionEnd = cursorPosition + 1;
-        editor.focus();
-      });
+        // Copy all text including the total
+        copyAllBtn.addEventListener('click', () => {
+            const totalText = totalDisplay.textContent + '\n' + editor.value;
+            navigator.clipboard.writeText(totalText);
+        });
 
-      // Copy all text including the total
-      copyAllBtn.addEventListener("click", () => {
-        const totalText = totalDisplay.textContent + "\n" + editor.value;
-        navigator.clipboard.writeText(totalText);
-      });
+        // Copy text excluding bracketed content
+        copyTotalBtn.addEventListener('click', () => {
+            const text = editor.value.replace(/\[.*?\]/g, '').trim();
+            const totalText = totalDisplay.textContent + '\n' + text;
+            navigator.clipboard.writeText(totalText);
+        });
 
-      // Copy text excluding bracketed content
-      copyTotalBtn.addEventListener("click", () => {
-        const text = editor.value.replace(/\[.*?\]/g, "").trim();
-        const totalText = totalDisplay.textContent + "\n" + text;
-        navigator.clipboard.writeText(totalText);
-      });
-
-      // Initial calculation
-      calculateTotal();
+        // Initial calculation
+        calculateTotal();
     </script>
-  </body>
+</body>
 </html>
